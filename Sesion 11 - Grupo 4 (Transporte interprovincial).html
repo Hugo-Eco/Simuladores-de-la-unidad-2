@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Grupo 4 – Transporte interprovincial</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F2F6FD;--surf:#fff;--ink:#10213F;--mut:#566580;--line:#D3DDF0;--a:#2457D6;--b:#E8742A;--bad:#C2452D;--ok:#1E8A5B;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B1426;--surf:#13213D;--ink:#E8EEFA;--mut:#A6B6D3;--line:#243B66;--a:#7EA3FF;--b:#F59A5B;--bad:#F07A62;--ok:#4CC995}}
+:root[data-theme="dark"]{--bg:#0B1426;--surf:#13213D;--ink:#E8EEFA;--mut:#A6B6D3;--line:#243B66;--a:#7EA3FF;--b:#F59A5B;--bad:#F07A62;--ok:#4CC995}
+html{scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 56px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Source Sans 3",system-ui,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;line-height:1.1;margin:0}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);display:flex;gap:4px;overflow-x:auto;padding:8px 12px}
+nav a{color:var(--mut);text-decoration:none;padding:6px 12px;border-radius:99px;white-space:nowrap;font-size:15px}
+nav a:hover{background:var(--surf);color:var(--ink)}
+section{max-width:860px;margin:0 auto;padding:52px 20px}
+h2{font-size:clamp(28px,6vw,40px);margin-bottom:18px}
+h3{font-size:20px;margin:24px 0 8px}
+.hero{min-height:85vh;display:flex;flex-direction:column;justify-content:center}
+.hero h1{font-size:clamp(38px,9vw,76px);font-weight:800;letter-spacing:-.02em}
+.sub,.meta{color:var(--mut)}.sub{margin:14px 0 26px}.meta{font-size:15px}
+.tag{font:700 18px "Bricolage Grotesque",sans-serif;color:var(--a);margin:0 0 6px}
+.ficha{display:grid;grid-template-columns:auto 1fr;gap:4px 16px}.ficha dt{color:var(--mut)}.ficha dd{margin:0;font-weight:600}
+.int{list-style:none;padding:0;font-weight:600}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surf)}
+table{border-collapse:collapse;width:100%;min-width:440px}
+th,td{padding:9px 12px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}th{font-family:"Bricolage Grotesque",sans-serif}
+tr:last-child td{border-bottom:0}tr.tot td{font-weight:600;background:color-mix(in srgb,var(--a) 12%,transparent)}
+.f{background:var(--surf);border:1px solid var(--line);border-left:6px solid var(--a);border-radius:10px;padding:12px 16px;margin:10px 0;font-size:18px}
+.f small{display:block;color:var(--mut);font-size:15px}
+.pos{color:var(--ok);font-weight:600}.neg{color:var(--bad);font-weight:600}
+.qbox{border-left:6px solid var(--b);background:var(--surf);border-radius:10px;padding:12px 16px;margin:0 0 14px;font-weight:600}
+.step{color:var(--mut);font-size:15px;margin:14px 0 4px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.resp{border:2px solid var(--ok);border-radius:12px;padding:14px 16px;margin:16px 0 0;background:color-mix(in srgb,var(--ok) 10%,transparent)}
+.resp b.t{font:700 15px "Bricolage Grotesque",sans-serif;color:var(--ok);display:block;text-transform:uppercase;letter-spacing:.04em}
+.why{border:1px dashed var(--a);border-radius:12px;padding:14px 16px;margin:14px 0 0}
+.why b.t{font:700 15px "Bricolage Grotesque",sans-serif;color:var(--a);display:block;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.ch{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:10px;margin:14px 0}
+.ch svg{width:100%;height:auto;display:block}
+.leg{display:flex;gap:16px;font-size:15px;color:var(--mut);flex-wrap:wrap}
+.leg span:before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;background:var(--c)}
+.ctl{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0}
+.ctl label{display:flex;justify-content:space-between;font-weight:600}.ctl input{width:100%;accent-color:var(--a)}
+.res{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.res div{padding:12px;border-radius:10px;border:1px solid var(--line)}
+.res b{display:block;font:800 28px/1.1 "Bricolage Grotesque",sans-serif}
+footer{text-align:center;color:var(--mut);padding:30px 20px 50px;font-size:14px}
+</style></head><body>
+<nav aria-label="Secciones"><a href="#portada">Portada</a><a href="#datos">Datos</a><a href="#formulas">Fórmulas</a><a href="#p1">Pregunta 1</a><a href="#p2">Pregunta 2</a><a href="#p3">Pregunta 3</a><a href="#p4">Pregunta 4</a><a href="#p5">Pregunta 5</a><a href="#escenario">Escenario</a><a href="#conclusion">Conclusión</a></nav>
+
+<section id="portada" class="hero">
+<p class="meta" style="margin:0 0 18px">Universidad Nacional Daniel Alcides Carrión · Facultad de Ciencias Económicas y Contables · Escuela de Formación Profesional de Economía</p>
+<p class="tag">Trabajo grupal</p>
+<h1>Transporte interprovincial: tarifa óptima</h1>
+<p class="sub">Grupo 4 · Monopolio con demanda lineal y costos cuadráticos. Resolvemos las 5 preguntas guía una por una.</p>
+<dl class="ficha"><dt>Curso</dt><dd>Taller de Micro y Macroeconomía</dd><dt>Docente</dt><dd>Cosme Torrecilla, Jonathan</dd><dt>Semestre</dt><dd>VIII "C"</dd></dl>
+<h3>Integrantes</h3>
+<ul class="int"><li>Huamán Torres, Luis Miguel</li><li>Zegarra Valencia, Alan</li><li>Herrera Palacios, Hugo</li></ul>
+<p class="meta">Cerro de Pasco – Perú · 2026</p>
+</section>
+
+<section id="datos">
+<h2>Datos del ejercicio</h2>
+<p>Una empresa opera una ruta regional y debe decidir su escala de servicio diaria. Fuentes: MTC, SUTRAN y OSITRAN.</p>
+<div class="tw"><table><tr><th>Dato</th><th>Valor</th></tr>
+<tr><td>Variable de decisión</td><td>Q = pasajeros por día</td></tr>
+<tr><td>Demanda inversa</td><td>P(Q) = 70 − 0.2Q</td></tr>
+<tr><td>Costo total</td><td>CT(Q) = 900 + 15Q + 0.05Q²</td></tr></table></div>
+</section>
+
+<section id="formulas">
+<h2>Fórmulas y regla de decisión</h2>
+<div class="f">IT = P(Q) · Q  ·  π = IT − CT<small>Ingreso total y ganancia.</small></div>
+<div class="f">IMg = dIT/dQ  ·  CMg = dCT/dQ<small>Derivadas del ingreso y del costo total.</small></div>
+<div class="f">Máximo: IMg = CMg<small>Condición de primer orden. Como IMg baja y CMg sube, es un máximo.</small></div>
+</section>
+
+<section id="p1">
+<h2>Pregunta 1</h2>
+<div class="qbox">Formule IT(Q), IMg y CMg.</div>
+<p class="step">Cómo se resuelve</p>
+<p>Se multiplica la demanda por Q y se deriva cada función respecto a Q.</p>
+<p class="step">Operación</p>
+<div class="f">IT = (70 − 0.2Q)·Q = 70Q − 0.2Q²<br>IMg = d(70Q − 0.2Q²)/dQ = 70 − 0.4Q<br>CMg = d(900 + 15Q + 0.05Q²)/dQ = 15 + 0.1Q</div>
+<div class="resp"><b class="t">Respuesta</b>IT = 70Q − 0.2Q² · IMg = 70 − 0.4Q · CMg = 15 + 0.1Q</div>
+<div class="why"><b class="t">¿Por qué?</b>El IMg baja dos veces más rápido que la demanda (−0.4 contra −0.2) porque bajar la tarifa para un pasajero extra la baja para todos. El CMg sube (+0.1) porque el costo tiene el término Q². El costo fijo (900) desaparece al derivar.</div>
+</section>
+
+<section id="p2">
+<h2>Pregunta 2</h2>
+<div class="qbox">Determine la cantidad óptima Q* y la tarifa óptima P*.</div>
+<p class="step">Cómo se resuelve</p>
+<p>Se iguala IMg con CMg para hallar Q*, y se reemplaza Q* en la demanda para hallar la tarifa.</p>
+<p class="step">Operación</p>
+<div class="f">70 − 0.4Q = 15 + 0.1Q<br>55 = 0.5Q → Q* = 110<br>P* = 70 − 0.2(110) = 48<br>Comprobación: IMg = 70 − 44 = 26 = CMg = 15 + 11 ✔</div>
+<div class="resp"><b class="t">Respuesta</b>Q* = 110 pasajeros por día y P* = S/ 48.</div>
+<div class="why"><b class="t">¿Por qué?</b>Mientras un pasajero adicional deje más ingreso que costo (IMg &gt; CMg), conviene transportarlo. Con 110 ambos valen S/ 26 y el pasajero 111 ya costaría más de lo que aporta. La tarifa no es 26 sino 48, porque la demanda determina cuánto paga cada pasajero.</div>
+</section>
+
+<section id="p3">
+<h2>Pregunta 3</h2>
+<div class="qbox">Halle la ganancia en el óptimo e interprete el resultado.</div>
+<p class="step">Cómo se resuelve</p>
+<p>Se calcula el ingreso y el costo total con Q* = 110 y se restan.</p>
+<p class="step">Operación</p>
+<div class="f">IT = 48 × 110 = 5 280<br>CT = 900 + 15(110) + 0.05(110²) = 900 + 1 650 + 605 = 3 155<br>π = 5 280 − 3 155 = 2 125<br>CMe = 3 155 ÷ 110 = 28.68 → ganancia por pasajero = 48 − 28.68 = 19.32</div>
+<div class="resp"><b class="t">Respuesta</b>π = S/ 2 125 por día. Es una ganancia positiva y alta: cubre el costo fijo y todos los costos variables.</div>
+<div class="why"><b class="t">¿Por qué?</b>La tarifa (S/ 48) está muy por encima del costo medio (S/ 28.68) y del costo marginal (S/ 26). Esa brecha es poder de mercado: la empresa fija la tarifa sobre su costo porque en esa ruta tiene pocos competidores. Su margen sobre la tarifa es (48 − 26) ÷ 48 = 46 %.</div>
+</section>
+
+<section id="p4">
+<h2>Pregunta 4</h2>
+<div class="qbox">Grafique Demanda, IMg y CMg.</div>
+<p class="step">Cómo se resuelve</p>
+<p>Se trazan las tres rectas con sus puntos de corte y se marca el cruce IMg = CMg.</p>
+<p class="step">Operación</p>
+<div class="f">Demanda: P = 70 en Q = 0 · P = 0 en Q = 350<br>IMg: 70 en Q = 0 · 0 en Q = 175<br>CMg: 15 en Q = 0 · 26 en Q = 110<br>Cruce en Q = 110; sube a la demanda: P = 48</div>
+<div class="ch"><svg id="c1" viewBox="0 0 640 320" role="img" aria-label="Demanda, ingreso marginal y costo marginal según pasajeros"></svg>
+<div class="leg"><span style="--c:var(--a)">Demanda</span><span style="--c:var(--b)">IMg</span><span style="--c:var(--ok)">CMg</span></div></div>
+<div class="resp"><b class="t">Respuesta</b>El óptimo está donde IMg y CMg se cruzan (110; S/ 26), y la tarifa se lee en la demanda sobre esa cantidad (S/ 48).</div>
+<div class="why"><b class="t">¿Por qué?</b>La cantidad la decide el cruce de los marginales, pero la tarifa la decide la demanda. La distancia entre 48 y 26 en la cantidad óptima es el margen sobre el costo marginal.</div>
+</section>
+
+<section id="p5">
+<h2>Pregunta 5</h2>
+<div class="qbox">Evalúe si ampliar frecuencias sería conveniente cuando el combustible aumenta 10 %.</div>
+<p class="step">Cómo se resuelve</p>
+<p>Supuesto: el combustible sube 10 % el costo variable (15Q + 0.05Q²); el costo fijo no cambia. Es un caso extremo, porque el combustible es solo parte del costo variable. Se recalcula el óptimo y se compara.</p>
+<p class="step">Operación</p>
+<div class="f">CMg nuevo = 1.1(15 + 0.1Q) = 16.5 + 0.11Q<br>70 − 0.4Q = 16.5 + 0.11Q → Q* = 53.5 ÷ 0.51 ≈ 104.9<br>P* = 70 − 0.2(104.9) ≈ 49.02<br>π* ≈ 5 142 − 3 236 ≈ 1 906</div>
+<div class="tw"><table><tr><th>Concepto</th><th>Antes</th><th>Combustible +10 %</th></tr>
+<tr><td>Q* (pasajeros/día)</td><td>110</td><td>≈ 105</td></tr>
+<tr><td>P* (S/)</td><td>48.00</td><td>≈ 49.02</td></tr>
+<tr class="tot"><td>π (S/)</td><td class="pos">2 125</td><td>≈ 1 906</td></tr>
+<tr><td>π si se mantiene Q = 110</td><td>2 125</td><td class="neg">≈ 1 900</td></tr></table></div>
+<div class="resp"><b class="t">Respuesta</b>No conviene ampliar. Con combustible más caro el óptimo baja a unos 105 pasajeros y la tarifa sube a unos S/ 49. La empresa sigue ganando (≈ S/ 1 906), pero ampliar a más de 105 pasajeros reduce la ganancia.</div>
+<div class="why"><b class="t">¿Por qué?</b>El CMg sube, por lo que el cruce con el IMg ocurre antes. Cada pasajero adicional pasado de 105 cuesta más de lo que ingresa. La ganancia cae unos S/ 219 (10 %), y parte del aumento se traslada al pasajero con una tarifa algo mayor.</div>
+</section>
+
+<section id="escenario">
+<h2>Escenario: sube el costo variable</h2>
+<p>Mueve el aumento del costo variable (por ejemplo, por el combustible) y mira cómo cambian el óptimo y la ganancia.</p>
+<div class="ctl"><label for="g">Aumento del costo variable <output id="gv"></output></label>
+<input id="g" type="range" min="0" max="30" step="1" value="10">
+<div class="res"><div><small>Q* (pasajeros/día)</small><b id="rq"></b></div><div><small>P* (S/)</small><b id="rpp"></b></div><div><small>Ganancia π*</small><b id="rp"></b></div><div><small>π si mantiene Q = 110</small><b id="rm"></b></div></div></div>
+<p>En todos los casos, π* ≥ π con Q = 110, porque el óptimo se recalcula. La diferencia crece cuanto más sube el costo.</p>
+</section>
+
+<section id="conclusion">
+<h2>Conclusión</h2>
+<div class="tw"><table><tr><th>Pregunta</th><th>Respuesta</th></tr>
+<tr><td>1. Funciones</td><td>IT = 70Q − 0.2Q² · IMg = 70 − 0.4Q · CMg = 15 + 0.1Q</td></tr>
+<tr><td>2. Óptimo</td><td>Q* = 110 · P* = S/ 48</td></tr>
+<tr><td>3. Ganancia</td><td>π = S/ 2 125 por día</td></tr>
+<tr><td>4. Gráfico</td><td>IMg = CMg = 26 en Q = 110</td></tr>
+<tr><td>5. Combustible +10 %</td><td>No ampliar; Q* ≈ 105, P* ≈ 49, π ≈ 1 906</td></tr></table></div>
+<p>La empresa maximiza su ganancia con 110 pasajeros diarios a S/ 48. Si sube el combustible, lo conveniente es operar un poco por debajo y ajustar la tarifa, no ampliar frecuencias.</p>
+</section>
+<footer>Grupo 4 · Taller de Micro y Macroeconomía · UNDAC 2026-B</footer>
+
+<script>
+var sp=function(n){return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g," ")};
+(function(){var el=document.getElementById("c1"),L=60,R=620,T=20,B=270,X=function(q){return L+q/360*(R-L)},Y=function(p){return B-p/70*(B-T)},h='';
+for(var v=0;v<=70;v+=10)h+='<line x1="'+L+'" x2="'+R+'" y1="'+Y(v)+'" y2="'+Y(v)+'" style="stroke:var(--line)"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" text-anchor="end" font-size="12" style="fill:var(--mut)">'+v+'</text>';
+for(v=0;v<=350;v+=50)h+='<text x="'+X(v)+'" y="288" text-anchor="middle" font-size="12" style="fill:var(--mut)">'+v+'</text>';
+h+='<text x="340" y="312" text-anchor="middle" font-size="13" style="fill:var(--mut)">Q (pasajeros por día) · P en S/</text>';
+[["a",0,70,350,0],["b",0,70,175,0],["ok",0,15,350,50]].forEach(function(s){h+='<line stroke-width="3" x1="'+X(s[1])+'" y1="'+Y(s[2])+'" x2="'+X(s[3])+'" y2="'+Y(s[4])+'" style="stroke:var(--'+s[0]+')"/>'});
+h+='<line x1="'+X(110)+'" x2="'+X(110)+'" y1="'+Y(48)+'" y2="'+B+'" stroke-dasharray="5 4" style="stroke:var(--ink)"/><line x1="'+L+'" x2="'+X(110)+'" y1="'+Y(48)+'" y2="'+Y(48)+'" stroke-dasharray="5 4" style="stroke:var(--ink)"/>';
+h+='<circle r="6" cx="'+X(110)+'" cy="'+Y(26)+'" style="fill:var(--ok)"/><circle r="6" cx="'+X(110)+'" cy="'+Y(48)+'" style="fill:var(--a)"/>';
+h+='<text x="'+(X(110)+8)+'" y="'+(Y(26)+16)+'" font-size="13" style="fill:var(--ink)">IMg = CMg = 26</text><text x="'+(X(110)+8)+'" y="'+(Y(48)-8)+'" font-size="13" style="fill:var(--ink)">Q* = 110 · P* = 48</text>';
+el.innerHTML=h})();
+function calc(){var g=+document.getElementById("g").value,k=1+g/100,q=(70-15*k)/(.4+.1*k),p=70-.2*q,
+f=function(x){return(70-.2*x)*x-900-k*(15*x+.05*x*x)},pi=f(q),pm=f(110);
+document.getElementById("gv").textContent="+"+g+" %";
+document.getElementById("rq").textContent=q.toFixed(1);document.getElementById("rpp").textContent=p.toFixed(2);
+document.getElementById("rp").textContent="S/ "+sp(pi);document.getElementById("rm").textContent="S/ "+sp(pm)}
+document.getElementById("g").oninput=calc;calc();
+</script></body></html>

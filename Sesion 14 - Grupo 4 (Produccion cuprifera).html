@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Grupo 4 · Producción cuprífera</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d3a3f;--card:#124a50;--ink:#eaf4f2;--mut:#9fc0bd;--line:#2a6368;--deep:#0d3a3f;--cu:#e8935a;--cu2:#4a3a2e;--ver:#5ccdb9;--ver2:#17555a;--vio:#a99ef5;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 Figtree,system-ui,sans-serif}
+h1,h2,h3{font-family:'Bricolage Grotesque',Figtree,sans-serif;line-height:1.1;margin:0}
+.hero{background:var(--deep);color:#eaf4f2;position:relative;overflow:hidden;padding:28px 20px 0}
+.hero svg{display:block;width:100%;height:auto;margin-top:18px}
+.wrap{max-width:860px;margin:0 auto}
+.uni{font-size:.82rem;opacity:.75;max-width:560px}
+.hero h1{font-size:clamp(2.2rem,8vw,4rem);font-weight:800;margin:14px 0 10px;letter-spacing:-.02em}
+.hero p.lead{max-width:560px;opacity:.9;margin:0 0 16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+.chips span{background:rgba(255,255,255,.12);border-radius:99px;padding:5px 13px;font-size:.88rem}
+nav{display:flex;gap:8px;overflow-x:auto;padding:12px 16px;max-width:860px;margin:0 auto;scrollbar-width:none}
+nav a{flex:none;color:var(--ink);text-decoration:none;font-weight:600;font-size:.88rem;border:1px solid var(--line);background:var(--card);padding:6px 14px;border-radius:99px}
+nav a:focus-visible,input:focus-visible{outline:3px solid var(--cu);outline-offset:2px}
+main{max-width:860px;margin:0 auto;padding:8px 16px 48px}
+section{margin-top:26px;display:none}section.on{display:block}
+nav a.on{background:var(--cu);color:#1b1208;border-color:var(--cu)}
+.pager{display:flex;justify-content:space-between;gap:12px;max-width:860px;margin:0 auto;padding:0 16px 32px}
+.pager button{font:600 1rem Figtree,sans-serif;padding:13px 28px;border-radius:99px;border:1px solid var(--line);cursor:pointer;background:transparent;color:var(--ink)}
+.pager .next{background:var(--cu);color:#1b1208;border-color:var(--cu);margin-left:auto}
+.pager button:disabled{opacity:.3;cursor:default}
+.pager button:focus-visible{outline:3px solid var(--vio);outline-offset:2px}
+h2{font-size:1.7rem;font-weight:700;margin-bottom:6px}
+.q{color:var(--mut);margin:0 0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.fx{font:600 1.15rem 'Bricolage Grotesque',sans-serif;color:var(--deep);background:var(--ver2);border-radius:12px;padding:12px 14px;margin:8px 0}
+:root:not([data-theme="light"]) .fx{color:var(--ink)}
+ol{margin:6px 0 14px;padding-left:22px}
+.op{background:var(--bg);border-left:4px solid var(--ver);border-radius:0 12px 12px 0;padding:12px 14px;margin:10px 0;font-variant-numeric:tabular-nums;overflow-x:auto}
+.ans{background:var(--cu2);border-left:4px solid var(--cu);border-radius:0 12px 12px 0;padding:12px 14px;margin:10px 0}
+.ans b,.why b{display:block;margin-bottom:2px}
+.why{border:1px dashed var(--line);border-radius:12px;padding:12px 14px;margin:10px 0;color:var(--mut)}
+.sim{margin-top:16px;border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--card)}
+.sim h3{font-size:1.1rem;margin-bottom:4px}
+.sim svg{width:100%;height:auto;display:block}
+.sl{display:flex;align-items:center;gap:12px;margin:8px 0}
+.sl label{font-weight:600;min-width:84px}
+input[type=range]{flex:1;accent-color:var(--cu);min-width:0}
+input[type=number]{width:110px;font:inherit;padding:6px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.out{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.out div{flex:1 1 120px;background:var(--bg);border-radius:12px;padding:8px 12px}
+.out small{display:block;color:var(--mut)}.out strong{font:700 1.25rem 'Bricolage Grotesque',sans-serif}
+.tag{display:inline-block;border-radius:99px;padding:4px 14px;font-weight:700;margin-top:8px}
+.ok{background:var(--ver2);color:var(--ver)}.no{background:var(--cu2);color:var(--cu)}
+.leg{display:flex;flex-wrap:wrap;gap:14px;font-size:.88rem;color:var(--mut);margin:4px 0}
+.leg i{display:inline-block;width:14px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
+table{width:100%;border-collapse:collapse}td,th{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left}
+.tbl{overflow-x:auto}
+footer{text-align:center;color:var(--mut);font-size:.85rem;padding:0 16px 28px}
+</style>
+</head>
+<body>
+<header class="hero"><div class="wrap">
+<p class="uni">Universidad Nacional Daniel Alcides Carrión · Facultad de Ciencias Económicas y Contables · Escuela de Formación Profesional de Economía</p>
+<h1>Producción cuprífera</h1>
+<p class="lead">¿Hasta dónde conviene producir cobre? Costo total, costo marginal y costo medio de una unidad minera, con un simulador en cada pregunta.</p>
+<p class="chips"><span>Grupo 4</span><span>Taller de Micro y Macroeconomía</span><span>VIII "C"</span><span>Cerro de Pasco – Perú · 2026</span></p>
+</div>
+<svg viewBox="0 0 860 150" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><path d="M0 150V92l90-26 70 14 120-44 90 22 120-36 100 30 110-30 90 24 70-14v138z" fill="#124e53"/><path d="M0 150V112l120-30 80 16 130-34 100 24 130-30 110 26 120-22 70 16v62z" fill="#1a6a6a"/><path d="M180 150l90-40h300l90 40z" fill="#c4672b"/><path d="M250 150l60-26h240l60 26z" fill="#dc8147"/><path d="M320 150l40-14h140l40 14z" fill="#f0a76d"/><path d="M0 150h860v0z" fill="#0d3a3f"/></svg>
+</header>
+<nav aria-label="Secciones"><a href="#datos">Datos</a><a href="#p1">Pregunta 1</a><a href="#p2">Pregunta 2</a><a href="#p3">Pregunta 3</a><a href="#p4">Pregunta 4</a><a href="#p5">Pregunta 5</a><a href="#fin">Conclusión</a></nav>
+<main>
+<section id="datos">
+<h2>Datos del caso</h2>
+<p class="q">El Perú es un productor líder de cobre y una unidad minera quiere evaluar sus costos operativos. La minería es clave para las exportaciones y el empleo. Instituciones base: MINEM y BCRP.</p>
+<div class="grid">
+<div class="card"><b>Costo total</b><div class="fx">CT(Q) = 8 000 + 35Q + 0.08Q²</div>Q = centenas de TMF de cobre al mes.</div>
+<div class="card"><b>Ingreso marginal de referencia</b><div class="fx">IMg = S/ 95</div>Por cada unidad de Q.</div>
+</div>
+<div class="card" style="margin-top:12px"><b>Fórmulas que se usan</b>
+<div class="fx">CMg = dCT/dQ = 35 + 0.16Q</div>
+<div class="fx">CMe = CT/Q = 8 000/Q + 35 + 0.08Q</div>
+Los 8 000 son el costo fijo: no cambian con Q. El resto es costo variable.</div>
+<div class="card" style="margin-top:12px"><b>Integrantes</b><br>Huamán Torres, Luis Miguel · Zegarra Valencia, Alan · Herrera Palacios, Hugo<br><span style="color:var(--mut)">Docente: Cosme Torrecilla, Jonathan</span></div>
+</section>
+
+<section id="p1">
+<h2>Pregunta 1</h2><p class="q">Calcule CT para Q = 50 y Q = 80.</p>
+<div class="card">
+<b>Cómo se resuelve</b>
+<ol><li>Se reemplaza Q en la función CT.</li><li>Se calcula cada término: costo fijo, parte lineal y parte cuadrática.</li><li>Se suman los tres.</li></ol>
+<div class="op">CT(50) = 8 000 + 35(50) + 0.08(50)² = 8 000 + 1 750 + 200 = <b>9 950</b><br>CT(80) = 8 000 + 35(80) + 0.08(80)² = 8 000 + 2 800 + 512 = <b>11 312</b><br>Aumento: 11 312 − 9 950 = 1 362</div>
+<div class="ans"><b>Respuesta</b>CT(50) = S/ 9 950 y CT(80) = S/ 11 312.</div>
+<div class="why"><b>¿Por qué?</b>Producir 30 centenas más cuesta S/ 1 362 más. Los S/ 8 000 fijos se pagan aunque no se produzca nada; por eso el costo sube, pero menos que proporcionalmente al inicio.</div>
+<div class="sim"><h3>Simulador 1: curva de costo total</h3>
+<div class="sl"><label for="s1">Q = <span id="v1">50</span></label><input id="s1" type="range" min="0" max="400" value="50"></div>
+<svg id="c1" viewBox="0 0 600 320" role="img" aria-label="Curva de costo total"></svg>
+<div class="out"><div><small>CT en este Q</small><strong id="o1">9 950</strong></div><div><small>Parte fija</small><strong>8 000</strong></div><div><small>Parte variable</small><strong id="o1b">1 950</strong></div></div></div>
+</div></section>
+
+<section id="p2">
+<h2>Pregunta 2</h2><p class="q">Halle CMg y evalúe en Q = 60.</p>
+<div class="card">
+<b>Cómo se resuelve</b>
+<ol><li>El CMg es la derivada del CT: cuánto sube el costo por una unidad más.</li><li>Se deriva cada término (el costo fijo desaparece).</li><li>Se evalúa en Q = 60.</li></ol>
+<div class="op">CT = 8 000 + 35Q + 0.08Q²<br>CMg = 35 + 2(0.08)Q = <b>35 + 0.16Q</b><br>CMg(60) = 35 + 0.16(60) = 35 + 9.60 = <b>44.60</b></div>
+<div class="ans"><b>Respuesta</b>CMg = 35 + 0.16Q; en Q = 60, CMg = S/ 44.60 por unidad de Q.</div>
+<div class="why"><b>¿Por qué?</b>Pasar de 60 a 61 centenas de TMF cuesta unos S/ 44.60 más. El CMg crece con Q: cada unidad adicional cuesta más que la anterior (rendimientos decrecientes).</div>
+<div class="sim"><h3>Simulador 2: CMg en cualquier Q</h3>
+<div class="sl"><label for="n2">Q =</label><input id="n2" type="number" min="0" value="60"></div>
+<div class="out"><div><small>CMg = 35 + 0.16Q</small><strong id="o2">44.60</strong></div></div></div>
+</div></section>
+
+<section id="p3">
+<h2>Pregunta 3</h2><p class="q">Halle CMe y evalúe en Q = 60.</p>
+<div class="card">
+<b>Cómo se resuelve</b>
+<ol><li>El CMe es el costo total repartido entre las unidades: CT ÷ Q.</li><li>Se divide cada término entre Q.</li><li>Se evalúa en Q = 60.</li></ol>
+<div class="op">CMe = (8 000 + 35Q + 0.08Q²) ÷ Q = <b>8 000/Q + 35 + 0.08Q</b><br>CMe(60) = 8 000/60 + 35 + 0.08(60) = 133.33 + 35 + 4.80 = <b>173.13</b><br>Comprobación: CT(60) = 10 388 → 10 388 ÷ 60 = 173.13 ✔</div>
+<div class="ans"><b>Respuesta</b>CMe = 8 000/Q + 35 + 0.08Q; en Q = 60, CMe ≈ S/ 173.13 por unidad.</div>
+<div class="why"><b>¿Por qué?</b>Con poca producción, el costo fijo se reparte entre pocas unidades y el CMe sale muy alto (133.33 solo de costo fijo). Al producir más, ese peso baja.</div>
+<div class="sim"><h3>Simulador 3: CMe en cualquier Q</h3>
+<div class="sl"><label for="n3">Q =</label><input id="n3" type="number" min="1" value="60"></div>
+<div class="out"><div><small>Costo fijo medio</small><strong id="o3a">133.33</strong></div><div><small>Costo variable medio</small><strong id="o3b">39.80</strong></div><div><small>CMe</small><strong id="o3">173.13</strong></div></div></div>
+</div></section>
+
+<section id="p4">
+<h2>Pregunta 4</h2><p class="q">Elabore el gráfico de CMg y CMe e interprete su cruce.</p>
+<div class="card">
+<b>Cómo se resuelve</b>
+<ol><li>Se grafican CMg (recta creciente) y CMe (curva en U).</li><li>Se halla dónde se cruzan: CMg = CMe.</li><li>Se interpreta el cruce.</li></ol>
+<div class="op">CMg = CMe → 35 + 0.16Q = 8 000/Q + 35 + 0.08Q<br>0.08Q = 8 000/Q → Q² = 100 000 → <b>Q ≈ 316.2</b><br>CMg = CMe = 35 + 0.16(316.2) ≈ <b>S/ 85.60</b></div>
+<div class="ans"><b>Respuesta</b>Se cruzan en Q ≈ 316.2 (unas 31 623 TMF al mes), con un costo de S/ 85.60. Ese es el punto más bajo del CMe.</div>
+<div class="why"><b>¿Por qué?</b>Si el CMg está debajo del CMe, la unidad extra es más barata que el promedio y lo baja. Si está arriba, lo sube. Por eso el CMg siempre corta al CMe en su mínimo: es la escala de producción más eficiente.</div>
+<div class="sim"><h3>Simulador 4: el cruce de CMg y CMe</h3>
+<div class="sl"><label for="s4">Q = <span id="v4">60</span></label><input id="s4" type="range" min="20" max="600" value="60"></div>
+<svg id="c4" viewBox="0 0 600 320" role="img" aria-label="Gráfico de CMg y CMe"></svg>
+<div class="leg"><span><i style="background:var(--cu)"></i>CMg</span><span><i style="background:var(--ver)"></i>CMe</span></div>
+<div class="out"><div><small>CMg</small><strong id="o4a"></strong></div><div><small>CMe</small><strong id="o4b"></strong></div></div><span class="tag" id="t4"></span></div>
+</div></section>
+
+<section id="p5">
+<h2>Pregunta 5</h2><p class="q">Si el IMg es S/ 95 por unidad de Q, determine si conviene elevar la producción desde Q = 60.</p>
+<div class="card">
+<b>Cómo se resuelve</b>
+<ol><li>Se compara IMg con CMg: si IMg &gt; CMg, producir una unidad más suma ganancia.</li><li>Se sigue aumentando Q hasta que IMg = CMg.</li><li>Se calcula la ganancia en ese punto.</li></ol>
+<div class="op">En Q = 60: IMg = 95 &gt; CMg = 44.60 → cada unidad extra deja 95 − 44.60 = <b>S/ 50.40</b><br>Óptimo: IMg = CMg → 95 = 35 + 0.16Q → <b>Q = 375</b><br>CT(375) = 8 000 + 13 125 + 11 250 = 32 375 · IT = 95(375) = 35 625<br>Ganancia máxima = 35 625 − 32 375 = <b>S/ 3 250</b></div>
+<div class="ans"><b>Respuesta</b>Sí conviene elevar la producción desde Q = 60, hasta Q = 375 (unas 37 500 TMF al mes), donde CMg = IMg = 95.</div>
+<div class="why"><b>¿Por qué?</b>Cada unidad adicional aporta más ingreso (95) que costo (CMg), así que sube la ganancia. Ojo: en Q = 60 todavía hay pérdida (IT 5 700 frente a CT 10 388), porque el CMe es 173.13, mayor que 95. La ganancia se vuelve positiva recién desde Q ≈ 173.4 y se mantiene hasta Q ≈ 576.6. Pasar de 375 reduciría la ganancia, porque el CMg supera a 95.</div>
+<div class="sim"><h3>Simulador 5: ¿conviene producir una unidad más?</h3>
+<div class="sl"><label for="s5">Q = <span id="v5">60</span></label><input id="s5" type="range" min="20" max="600" value="60"></div>
+<svg id="c5" viewBox="0 0 600 320" role="img" aria-label="IMg frente a CMg y CMe"></svg>
+<div class="leg"><span><i style="background:var(--cu)"></i>CMg</span><span><i style="background:var(--ver)"></i>CMe</span><span><i style="background:var(--vio)"></i>IMg = 95</span></div>
+<div class="out"><div><small>IMg − CMg</small><strong id="o5a"></strong></div><div><small>Ganancia total</small><strong id="o5b"></strong></div></div><span class="tag" id="t5"></span></div>
+</div></section>
+
+<section id="fin">
+<h2>Conclusión</h2>
+<div class="card tbl"><table>
+<tr><th>Pregunta</th><th>Respuesta</th></tr>
+<tr><td>1. CT</td><td>CT(50) = 9 950 · CT(80) = 11 312</td></tr>
+<tr><td>2. CMg</td><td>35 + 0.16Q; CMg(60) = 44.60</td></tr>
+<tr><td>3. CMe</td><td>8 000/Q + 35 + 0.08Q; CMe(60) ≈ 173.13</td></tr>
+<tr><td>4. Cruce</td><td>Q ≈ 316.2, costo mínimo S/ 85.60</td></tr>
+<tr><td>5. Decisión</td><td>Sí elevar, hasta Q = 375; ganancia máxima S/ 3 250</td></tr>
+</table></div>
+<p>La unidad minera debe aumentar su producción mientras el ingreso de una unidad extra supere su costo marginal. Con IMg = 95, el nivel que maximiza la ganancia es Q = 375, bastante por encima de Q = 60.</p>
+</section>
+</main>
+<div class="pager"><button class="prev" id="prev">Anterior</button><button class="next" id="next">Siguiente</button></div>
+<footer>Grupo 4 · Taller de Micro y Macroeconomía · UNDAC 2026-B</footer>
+<script>
+const CT=q=>8000+35*q+.08*q*q,CMg=q=>35+.16*q,CMe=q=>8000/q+35+.08*q;
+const f=(x,d=2)=>x.toLocaleString('es-PE',{minimumFractionDigits:d,maximumFractionDigits:d});
+const $=i=>document.getElementById(i);
+function chart(id,o){const W=600,H=320,L=52,R=14,T=14,B=34,X=x=>L+x/o.xm*(W-L-R),Y=y=>H-B-Math.min(Math.max(y,0),o.ym)/o.ym*(H-T-B);let s='';
+for(let i=0;i<=4;i++){const v=o.ym*i/4;s+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${L-6}" y="${Y(v)+4}" text-anchor="end" font-size="11" fill="var(--mut)">${Math.round(v)}</text>`}
+for(let i=0;i<=4;i++){const v=o.xm*i/4;s+=`<text x="${X(v)}" y="${H-12}" text-anchor="middle" font-size="11" fill="var(--mut)">${Math.round(v)}</text>`}
+s+=`<text x="${W-R}" y="${H-1}" text-anchor="end" font-size="11" fill="var(--mut)">Q (centenas de TMF)</text>`;
+o.s.forEach(r=>{let d='';for(let x=o.x0;x<=o.xm;x+=o.xm/150){d+=(d?'L':'M')+X(x).toFixed(1)+' '+Y(r.f(x)).toFixed(1)}s+=`<path d="${d}" fill="none" stroke="${r.c}" stroke-width="3" stroke-linecap="round"/>`});
+(o.p||[]).forEach(p=>{s+=`<circle cx="${X(p.x)}" cy="${Y(p.y)}" r="${p.r||6}" fill="${p.c}" stroke="var(--card)" stroke-width="2"/>`});
+if(o.v!=null)s+=`<line x1="${X(o.v)}" x2="${X(o.v)}" y1="${T}" y2="${H-B}" stroke="var(--mut)" stroke-dasharray="4 4"/>`;
+$(id).innerHTML=s}
+const cu='var(--cu)',ver='var(--ver)',vio='var(--vio)';
+function u1(){const q=+$('s1').value;$('v1').textContent=q;$('o1').textContent=f(CT(q),0);$('o1b').textContent=f(CT(q)-8000,0);
+chart('c1',{xm:400,ym:20000,x0:0,s:[{f:CT,c:ver}],v:q,p:[{x:50,y:CT(50),c:cu},{x:80,y:CT(80),c:cu},{x:q,y:CT(q),c:vio,r:7}]})}
+function u2(){const q=+$('n2').value||0;$('o2').textContent=f(CMg(q))}
+function u3(){const q=+$('n3').value||1;$('o3a').textContent=f(8000/q);$('o3b').textContent=f(35+.08*q);$('o3').textContent=f(CMe(q))}
+function u4(){const q=+$('s4').value;$('v4').textContent=q;$('o4a').textContent=f(CMg(q));$('o4b').textContent=f(CMe(q));
+const t=$('t4'),d=CMg(q)-CMe(q);t.textContent=Math.abs(q-316.2)<8?'Cerca del cruce: el CMe está en su mínimo':d<0?'CMg bajo el CMe: el CMe baja':'CMg sobre el CMe: el CMe sube';t.className='tag '+(d<0?'ok':'no');
+chart('c4',{xm:600,ym:200,x0:20,s:[{f:CMg,c:cu},{f:CMe,c:ver}],v:q,p:[{x:316.23,y:85.6,c:vio,r:7}]})}
+function u5(){const q=+$('s5').value;$('v5').textContent=q;const m=95-CMg(q),b=95*q-CT(q);$('o5a').textContent=f(m);$('o5b').textContent=f(b,0);
+const t=$('t5');t.textContent=Math.abs(q-375)<6?'Óptimo: IMg ≈ CMg':m>0?'Conviene elevar: IMg > CMg':'No conviene: IMg < CMg';t.className='tag '+(m>0?'ok':'no');
+chart('c5',{xm:600,ym:200,x0:20,s:[{f:CMg,c:cu},{f:CMe,c:ver},{f:()=>95,c:vio}],v:q,p:[{x:375,y:95,c:vio,r:7}]})}
+$('s1').oninput=u1;$('n2').oninput=u2;$('n3').oninput=u3;$('s4').oninput=u4;$('s5').oninput=u5;
+u1();u2();u3();u4();u5();
+const pages=[...document.querySelectorAll('main section')],links=[...document.querySelectorAll('nav a')];let cur=0;
+function go(i,sc){cur=Math.max(0,Math.min(pages.length-1,i));pages.forEach((p,k)=>p.classList.toggle('on',k===cur));links.forEach((a,k)=>a.classList.toggle('on',k===cur));
+$('prev').disabled=cur===0;$('next').disabled=cur===pages.length-1;$('next').textContent=cur===pages.length-2?'Ver conclusión':'Siguiente';
+if(sc)document.querySelector('nav').scrollIntoView({block:'start'});links[cur].scrollIntoView({inline:'center',block:'nearest'})}
+links.forEach((a,k)=>a.onclick=e=>{e.preventDefault();go(k,true)});
+$('next').onclick=()=>go(cur+1,true);$('prev').onclick=()=>go(cur-1,true);go(0,false);
+</script>
+</body>
+</html>

@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulador de rentabilidad – Unidad acuícola de trucha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F7F6; --surface:#FFFFFF; --ink:#12303B; --muted:#56717C; --line:#D5E2E4;
+  --it:#2F6F9F; --ct:#B9853C; --pi:#2B8A57; --loss:#C0392B;
+  --teal:#0E6E7E; --on-teal:#FFFFFF; --tealSoft:#DDEEF0; --piSoft:#E2F3E9; --lossSoft:#FBE6E3; --ctSoft:#F6EBDA; --itSoft:#E1EDF6;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1B21; --surface:#14262E; --ink:#E5F0F2; --muted:#9BB3BB; --line:#27414B;
+    --it:#6DB0DE; --ct:#D9A95E; --pi:#5FCB8C; --loss:#F0786B;
+    --teal:#5CC3D1; --on-teal:#0D1B21; --tealSoft:#183A42; --piSoft:#163B2A; --lossSoft:#46211D; --ctSoft:#3A2F1B; --itSoft:#1B3446;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1B21; --surface:#14262E; --ink:#E5F0F2; --muted:#9BB3BB; --line:#27414B;
+  --it:#6DB0DE; --ct:#D9A95E; --pi:#5FCB8C; --loss:#F0786B;
+  --teal:#5CC3D1; --on-teal:#0D1B21; --tealSoft:#183A42; --piSoft:#163B2A; --lossSoft:#46211D; --ctSoft:#3A2F1B; --itSoft:#1B3446;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 92px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:17px/1.5 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-variant-numeric:tabular-nums;background-color:var(--bg)}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.wrap{max-width:1140px;margin:0 auto;padding:0 20px 64px}
+
+/* Encabezado */
+.hero{padding:36px 0 20px}
+.hero h1{font:600 clamp(28px,4.4vw,44px)/1.12 Newsreader,Georgia,"Times New Roman",serif;margin:0 0 10px;max-width:22ch}
+.hero .sub{color:var(--muted);margin:0 0 18px;max-width:64ch}
+.formulas{display:flex;flex-wrap:wrap;gap:10px}
+.formulas span{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 16px;font-weight:600}
+.how{margin-top:18px;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--teal);border-radius:8px;padding:14px 18px}
+.how p{margin:0}
+.how details{margin-top:8px}
+.how summary{cursor:pointer;font-weight:600;color:var(--teal)}
+.how ul{margin:10px 0 0;padding-left:20px}
+.how li{margin:4px 0}
+
+/* Barra de navegación */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 0}
+.nav .wrap{padding-bottom:0;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.nb{display:flex;flex-direction:column;align-items:flex-start;gap:0;min-height:56px;padding:8px 14px;border-radius:10px;
+  border:1.5px solid var(--line);background:var(--surface);cursor:pointer;text-align:left}
+.nb b{font-weight:600;line-height:1.2}
+.nb small{color:var(--muted);font-size:13px}
+.nb:hover{border-color:var(--teal)}
+.nb[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:var(--on-teal)}
+.nb[aria-pressed="true"] small{color:var(--on-teal);opacity:.85}
+.nb.link{border-style:dashed}
+
+/* Secciones */
+.sec{margin-top:56px;scroll-margin-top:92px}
+.sec>h2{font:600 28px/1.2 Newsreader,Georgia,serif;margin:0 0 6px}
+.lead{color:var(--muted);margin:0 0 20px;max-width:70ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px}
+
+/* Datos de entrada */
+.fields{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.field{padding:14px 16px}
+.field label{display:block;font-weight:600}
+.field .unit{color:var(--muted);font-size:14px}
+.field input[type=number],.ctl input[type=number]{width:100%;font:600 24px "IBM Plex Sans",sans-serif;background:transparent;border:0;border-bottom:2px solid var(--line);padding:4px 0;margin:6px 0 10px;color:var(--ink);border-radius:0}
+.field input[type=number]:focus,.ctl input[type=number]:focus{border-bottom-color:var(--teal);outline:none}
+input[type=range]{width:100%;accent-color:var(--teal);height:28px;cursor:pointer}
+.bar-tools{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:14px}
+.btn{border:1.5px solid var(--teal);background:transparent;color:var(--teal);font-weight:600;border-radius:8px;padding:8px 16px;cursor:pointer;min-height:44px}
+.btn:hover{background:var(--tealSoft)}
+.badge{font-size:14px;font-weight:600;border-radius:999px;padding:4px 12px}
+.badge.ok{background:var(--piSoft);color:var(--pi)}
+.badge.mod{background:var(--ctSoft);color:var(--ct)}
+
+/* Resultados principales */
+.res-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px;margin-bottom:14px}
+.res-head h3{margin:0;font-size:19px;font-weight:600}
+.kpis{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:16px}
+.kpi{padding:18px 20px;border-radius:10px;background:var(--surface);border:1px solid var(--line)}
+.kpi .kl{font-weight:600}
+.kpi .kv{font:600 34px/1.15 "IBM Plex Sans",sans-serif;margin:6px 0 4px}
+.kpi .kf{color:var(--muted);font-size:15px}
+.kpi.it{border-top:5px solid var(--it)} .kpi.it .kv{color:var(--it)}
+.kpi.ct{border-top:5px solid var(--ct)} .kpi.ct .kv{color:var(--ct)}
+.kpi.pi{border:2px solid var(--pi);background:var(--piSoft);border-radius:18px}
+.kpi.pi .kv{font:600 clamp(44px,6vw,64px)/1.05 Newsreader,Georgia,serif;color:var(--pi);margin:4px 0 6px}
+.kpi.pi.neg{border-color:var(--loss);background:var(--lossSoft)}
+.kpi.pi.neg .kv{color:var(--loss)}
+.kpi.pi .kn{font-size:15px;margin-top:6px}
+.eqs{margin-top:16px;padding:14px 20px}
+.eqs p{margin:4px 0}
+.eqs b{font-weight:600}
+.note{margin:14px 0 0;padding:12px 16px;border-left:5px solid var(--teal);background:var(--tealSoft);border-radius:0 8px 8px 0}
+.split{margin-top:16px;padding:16px 20px}
+.split h4{margin:0 0 10px;font-size:16px;font-weight:600}
+
+/* Barra de reparto */
+.bar{display:flex;height:36px;border-radius:6px;overflow:hidden;background:var(--line)}
+.seg{display:block;height:100%}
+.seg.ct{background:var(--ct)} .seg.pi{background:var(--pi)} .seg.loss{background:var(--loss)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:8px;font-size:15px}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.sw.ct{background:var(--ct)} .sw.pi{background:var(--pi)} .sw.loss{background:var(--loss)}
+
+/* Escenarios */
+.scen{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start}
+.scard{padding:18px;display:flex;flex-direction:column;gap:14px}
+.scard.on{border-color:var(--teal);box-shadow:0 0 0 2px var(--teal)}
+.scard h3{margin:0;font-size:17px;font-weight:600;line-height:1.3}
+.scard .show{align-self:flex-start;border:0;background:none;color:var(--teal);font-weight:600;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+dl{margin:0}
+dl>div{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px dashed var(--line)}
+dt{color:var(--muted)}
+dd{margin:0;font-weight:600;text-align:right}
+dl.data .chg{background:var(--ctSoft);margin:0 -8px;padding:6px 8px;border-radius:6px;border-bottom-color:transparent}
+dl.res .r-pi{font-size:20px;border-bottom:0}
+dl.res .r-pi dd,dl.res .r-pi dt{color:var(--pi);font-weight:600}
+dl.res .r-pi.neg dd,dl.res .r-pi.neg dt{color:var(--loss)}
+.ctl{background:var(--tealSoft);border-radius:8px;padding:12px 14px}
+.ctl label{font-weight:600;display:block}
+.ctl .row{display:flex;align-items:baseline;gap:8px}
+.ctl .row input{max-width:110px}
+.ctl .row span{font:600 22px "IBM Plex Sans",sans-serif}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.chip{border:1.5px solid var(--teal);background:var(--surface);border-radius:999px;padding:6px 16px;cursor:pointer;font-weight:600;min-height:40px}
+.chip[aria-pressed="true"]{background:var(--teal);color:var(--on-teal)}
+.steps p{margin:3px 0;font-size:15.5px}
+
+/* Tabla */
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:560px}
+th,td{padding:12px 16px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+thead th{font-weight:600;background:var(--surface)}
+tbody th{font-weight:500;color:var(--muted)}
+td{font-weight:600;font-size:18px}
+tr.pi-row td,tr.pi-row th{background:var(--piSoft);font-size:20px}
+tr.pi-row th{color:var(--pi);font-weight:600}
+.on-col{background:var(--tealSoft)}
+tr.pi-row .on-col{background:var(--tealSoft)}
+.pos{color:var(--pi)} .neg-t{color:var(--loss)}
+
+/* Gráficos */
+.chartcard{padding:16px 18px}
+.lg{display:flex;flex-wrap:wrap;gap:6px 18px;margin-bottom:8px}
+svg{display:block;width:100%;height:auto}
+svg text{font-family:"IBM Plex Sans",system-ui,sans-serif;fill:var(--ink)}
+svg .muted{fill:var(--muted)}
+svg .grid{stroke:var(--line);stroke-width:1}
+svg .axis{stroke:var(--muted);stroke-width:1.5}
+.b-it{fill:var(--it)} .b-ct{fill:var(--ct)} .b-pi{fill:var(--pi)} .b-loss{fill:var(--loss)}
+.actbg{fill:var(--tealSoft)}
+
+/* Sensibilidad */
+.sens{display:grid;grid-template-columns:1fr 1.15fr;gap:16px;align-items:start}
+.sens-l{display:flex;flex-direction:column;gap:14px}
+.sens .ctl{background:var(--surface);border:1px solid var(--line);padding:16px}
+.sens .ctl .row input{max-width:190px}
+.chain{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font:600 20px "IBM Plex Sans",sans-serif;padding:14px 16px;border-radius:10px;background:var(--surface);border:1px solid var(--line)}
+.chain .tag{padding:4px 12px;border-radius:8px;background:var(--line)}
+.chain .up{background:var(--lossSoft);color:var(--loss)}
+.chain .dn{background:var(--piSoft);color:var(--pi)}
+.chain .eq{background:var(--line);color:var(--muted)}
+.mini{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mini .kpi{padding:14px 16px}
+.mini .kpi .kv{font-size:28px}
+.mini .kpi.pi .kv{font-size:40px}
+.delta{font-size:15px;font-weight:600}
+.delta.good{color:var(--pi)} .delta.bad{color:var(--loss)} .delta.flat{color:var(--muted)}
+.warn{padding:10px 14px;border-radius:8px;background:var(--lossSoft);color:var(--loss);font-weight:600}
+
+.foot{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:14.5px}
+.foot p{margin:4px 0}
+
+@media (max-width:900px){
+  .fields,.scen,.kpis,.sens{grid-template-columns:1fr}
+  .nav .wrap{grid-template-columns:1fr 1fr}
+  .kpi.pi{order:-1}
+}
+@media (max-width:520px){ body{font-size:16px} .mini{grid-template-columns:1fr} }
+@media print{ .nav{position:static} }
+</style>
+</head>
+<body>
+
+<header class="wrap hero">
+  <h1>Rentabilidad de una unidad acuícola de producción de trucha</h1>
+  <p class="sub">Simulador interactivo para observar cómo el precio, la producción y los costos determinan la ganancia.</p>
+  <div class="formulas" aria-label="Fórmulas del modelo">
+    <span>IT = P × q</span><span>CT = CF + CV</span><span>π = IT − CT</span>
+  </div>
+  <div class="how">
+    <p><b>Cómo usarlo:</b> elija un escenario en la barra superior (o pulse las teclas <b>1</b>, <b>2</b>, <b>3</b>). Cambie cualquier dato con el deslizador o escribiendo el valor: todo se recalcula al instante.</p>
+    <details>
+      <summary>Guía para los cuatro integrantes</summary>
+      <ul>
+        <li><b>Integrante 1:</b> pulsa «Escenario A» y explica IT, CT y π.</li>
+        <li><b>Integrante 2:</b> pulsa «Escenario B» y muestra cómo el mayor costo variable reduce la ganancia.</li>
+        <li><b>Integrante 3:</b> pulsa «Comparación» y explica el riesgo productivo al comparar A y B.</li>
+        <li><b>Integrante 4:</b> pulsa «B con reducción 8 %», muestra el nuevo resultado y cierra con la conclusión.</li>
+      </ul>
+    </details>
+  </div>
+</header>
+
+<nav class="nav" aria-label="Escenarios">
+  <div class="wrap">
+    <button class="nb" id="nb-A" type="button" aria-pressed="true"><b>Escenario A</b><small>Integrante 1</small></button>
+    <button class="nb" id="nb-B" type="button" aria-pressed="false"><b>Escenario B</b><small>Integrante 2</small></button>
+    <button class="nb link" id="nb-cmp" type="button"><b>Comparación</b><small>Integrante 3</small></button>
+    <button class="nb" id="nb-C" type="button" aria-pressed="false"><b id="nb-C-t">B con reducción 8 %</b><small>Integrante 4</small></button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <section class="sec" id="datos">
+    <h2>Datos de entrada</h2>
+    <p class="lead">Los datos del caso ya están cargados. Modifíquelos para probar otras situaciones.</p>
+    <div class="fields" id="fields"></div>
+    <div class="bar-tools">
+      <button class="btn" type="button" id="reset">Restablecer datos del caso</button>
+      <span class="badge ok" id="state-badge">Datos originales del caso</span>
+    </div>
+  </section>
+
+  <section class="sec" id="resultados">
+    <h2>Resultados principales</h2>
+    <div class="res-head">
+      <h3 id="m-title"></h3>
+    </div>
+    <div class="kpis">
+      <div class="kpi it"><div class="kl">Ingreso total (IT)</div><div class="kv" id="m-IT"></div><div class="kf">IT = P × q</div></div>
+      <div class="kpi ct"><div class="kl">Costo total (CT)</div><div class="kv" id="m-CT"></div><div class="kf">CT = CF + CV</div></div>
+      <div class="kpi pi" id="m-pi-card"><div class="kl">Ganancia (π)</div><div class="kv" id="m-pi"></div><div class="kf">π = IT − CT</div><div class="kn" id="m-pi-note"></div></div>
+    </div>
+    <div class="card eqs" id="m-eq"></div>
+    <div class="card split">
+      <h4>Cómo se reparte el ingreso total</h4>
+      <div id="m-bar"></div>
+    </div>
+    <p class="note" id="m-note"></p>
+  </section>
+
+  <section class="sec" id="escenarios">
+    <h2>Escenarios</h2>
+    <p class="lead">Las tres situaciones del caso, una al lado de otra. La barra tiene la misma escala en todas, para comparar la ganancia a simple vista.</p>
+    <div class="scen">
+      <article class="card scard" id="card-A">
+        <h3 id="t-A"></h3>
+        <button class="show" type="button" data-pick="A">Ver en resultados principales</button>
+        <div id="body-A"></div>
+      </article>
+      <article class="card scard" id="card-B">
+        <h3 id="t-B"></h3>
+        <button class="show" type="button" data-pick="B">Ver en resultados principales</button>
+        <div id="body-B"></div>
+      </article>
+      <article class="card scard" id="card-C">
+        <h3 id="t-C"></h3>
+        <button class="show" type="button" data-pick="C">Ver en resultados principales</button>
+        <div class="ctl">
+          <label for="n-red">Porcentaje de reducción del costo variable</label>
+          <div class="row"><input id="n-red" type="number" min="0" max="100" step="0.5" inputmode="decimal"><span>%</span></div>
+          <input id="r-red" type="range" min="0" max="30" step="1" aria-label="Porcentaje de reducción">
+          <div class="chips" id="chips">
+            <button class="chip" type="button" data-red="0" aria-pressed="false">0 %</button>
+            <button class="chip" type="button" data-red="4" aria-pressed="false">4 %</button>
+            <button class="chip" type="button" data-red="8" aria-pressed="true">8 %</button>
+            <button class="chip" type="button" data-red="12" aria-pressed="false">12 %</button>
+          </div>
+        </div>
+        <div id="body-C"></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="sec" id="comparacion">
+    <h2>Comparación de escenarios</h2>
+    <p class="lead">La tabla se actualiza sola cuando cambia cualquier dato.</p>
+    <div class="card tbl-wrap"><table id="cmp"></table></div>
+  </section>
+
+  <section class="sec" id="graficos">
+    <h2>Gráfico comparativo</h2>
+    <p class="lead">Ingreso total, costo total y ganancia en los tres escenarios.</p>
+    <div class="card chartcard">
+      <div class="lg">
+        <span><i class="sw" style="background:var(--it)"></i>Ingreso total (IT)</span>
+        <span><i class="sw" style="background:var(--ct)"></i>Costo total (CT)</span>
+        <span><i class="sw" style="background:var(--pi)"></i>Ganancia (π)</span>
+        <span><i class="sw" style="background:var(--loss)"></i>Pérdida</span>
+      </div>
+      <div id="chart"></div>
+    </div>
+  </section>
+
+  <section class="sec" id="sensibilidad">
+    <h2>¿QUÉ PASA SI CAMBIA EL COSTO VARIABLE?</h2>
+    <p class="lead">Mueva el costo variable y observe cómo reacciona la ganancia. Producción, precio y costo fijo se mantienen constantes. La comparación se hace contra el Escenario A.</p>
+    <div class="sens">
+      <div class="sens-l">
+        <div class="card ctl">
+          <label for="n-cv">Costo variable (CV) en S/</label>
+          <div class="row"><input id="n-cv" type="number" min="0" step="100" inputmode="decimal"></div>
+          <input id="r-cv" type="range" min="5000" max="40000" step="100" aria-label="Costo variable">
+          <div class="chips">
+            <button class="chip" type="button" data-cv="A" aria-pressed="false">CV de A</button>
+            <button class="chip" type="button" data-cv="B" aria-pressed="false">CV de B</button>
+            <button class="chip" type="button" data-cv="C" aria-pressed="false">CV de B − reducción</button>
+          </div>
+        </div>
+        <div class="chain" id="chain"></div>
+        <div class="mini">
+          <div class="kpi ct"><div class="kl">Costo total (CT)</div><div class="kv" id="s-CT"></div><div class="delta" id="s-dCT"></div></div>
+          <div class="kpi pi" id="s-pi-card"><div class="kl">Ganancia (π)</div><div class="kv" id="s-pi"></div><div class="delta" id="s-dpi"></div></div>
+        </div>
+        <div class="card eqs" id="s-eq"></div>
+        <div id="s-warn"></div>
+      </div>
+      <div class="card chartcard">
+        <div id="sens-chart"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot" id="foot"></footer>
+</main>
+
+<script>
+//<CORE>
+const r2 = x => Math.round((x + Number.EPSILON) * 100) / 100;
+function fmt(n, dec){
+  n = r2(n);
+  const a = Math.abs(n);
+  const parts = a.toFixed(2).split('.');
+  const int = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0');
+  const out = (parts[1] === '00' && !dec) ? int : int + ',' + parts[1];
+  return (n < 0 ? '\u2212' : '') + out;
+}
+function money(n, dec){
+  n = r2(n);
+  return (n < 0 ? '\u2212' : '') + 'S/\u00A0' + fmt(Math.abs(n), dec);
+}
+function numStr(x){ return String(Number(Number(x).toFixed(3))).replace('.', ','); }
+function calc(q, P, CF, CV){
+  const IT = r2(P * q), CT = r2(CF + CV);
+  return { q, P, CF, CV, IT, CT, pi: r2(IT - CT) };
+}
+function scenarios(s){
+  const A = calc(s.q, s.P, s.CF, s.CVa);
+  const B = calc(s.q, s.P, s.CF, s.CVb);
+  const red = r2(s.CVb * s.red / 100);
+  const C = calc(s.q, s.P, s.CF, r2(s.CVb - red));
+  C.red = red;
+  return { A, B, C };
+}
+//</CORE>
+
+const DEFAULTS = { q:1800, P:16.5, CF:7800, CVa:18900, CVb:21200, red:8, cv:18900 };
+const state = Object.assign({ active:'A' }, DEFAULTS);
+const $ = id => document.getElementById(id);
+const FIELDS = [
+  { k:'q',   label:'Producción (q)',                        unit:'kg',         min:0,    max:4000,  step:10,  nstep:1 },
+  { k:'P',   label:'Precio (P)',                            unit:'S/ por kg',  min:5,    max:30,    step:0.1, nstep:0.01 },
+  { k:'CF',  label:'Costo fijo (CF)',                       unit:'S/',         min:0,    max:20000, step:100, nstep:1 },
+  { k:'CVa', label:'Costo variable (CV), Escenario A',      unit:'S/',         min:0,    max:40000, step:100, nstep:1 },
+  { k:'CVb', label:'Costo variable (CV), Escenario B',      unit:'S/',         min:0,    max:40000, step:100, nstep:1 }
+];
+const isNum = v => Number.isFinite(v);
+const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- Construcción de controles ---------- */
+function buildFields(){
+  const host = $('fields');
+  FIELDS.forEach(f => {
+    const d = document.createElement('div');
+    d.className = 'card field';
+    d.innerHTML =
+      '<label for="n-'+f.k+'">'+f.label+' <span class="unit">('+f.unit+')</span></label>' +
+      '<input id="n-'+f.k+'" type="number" min="0" step="'+f.nstep+'" inputmode="decimal">' +
+      '<input id="r-'+f.k+'" type="range" min="'+f.min+'" max="'+f.max+'" step="'+f.step+'" aria-label="'+f.label+'">';
+    host.appendChild(d);
+    const n = d.querySelector('#n-'+f.k), r = d.querySelector('#r-'+f.k);
+    n.addEventListener('input', () => {
+      const v = parseFloat(n.value);
+      state[f.k] = isNum(v) ? Math.max(0, v) : 0;
+      r.value = state[f.k];
+      renderAll();
+    });
+    r.addEventListener('input', () => {
+      state[f.k] = parseFloat(r.value);
+      n.value = r.value;
+      renderAll();
+    });
+  });
+}
+function syncControls(){
+  FIELDS.forEach(f => { $('n-'+f.k).value = state[f.k]; $('r-'+f.k).value = state[f.k]; });
+  $('n-red').value = state.red; $('r-red').value = state.red;
+  $('n-cv').value = state.cv;   $('r-cv').value = state.cv;
+}
+function bindExtra(){
+  $('n-red').addEventListener('input', e => {
+    const v = parseFloat(e.target.value);
+    state.red = isNum(v) ? Math.min(100, Math.max(0, v)) : 0;
+    $('r-red').value = state.red; renderAll();
+  });
+  $('r-red').addEventListener('input', e => { state.red = parseFloat(e.target.value); $('n-red').value = e.target.value; renderAll(); });
+  $('chips').addEventListener('click', e => {
+    const b = e.target.closest('[data-red]'); if(!b) return;
+    state.red = parseFloat(b.dataset.red); syncControls(); renderAll();
+  });
+  $('n-cv').addEventListener('input', e => {
+    const v = parseFloat(e.target.value);
+    state.cv = isNum(v) ? Math.max(0, v) : 0;
+    $('r-cv').value = state.cv; renderAll();
+  });
+  $('r-cv').addEventListener('input', e => { state.cv = parseFloat(e.target.value); $('n-cv').value = e.target.value; renderAll(); });
+  document.querySelector('#sensibilidad .chips').addEventListener('click', e => {
+    const b = e.target.closest('[data-cv]'); if(!b) return;
+    const S = scenarios(state);
+    state.cv = S[b.dataset.cv].CV; syncControls(); renderAll();
+  });
+  $('reset').addEventListener('click', () => { Object.assign(state, DEFAULTS); syncControls(); renderAll(); });
+  document.querySelectorAll('[data-pick]').forEach(b => b.addEventListener('click', () => pick(b.dataset.pick, true)));
+  $('nb-A').addEventListener('click', () => pick('A', true));
+  $('nb-B').addEventListener('click', () => pick('B', true));
+  $('nb-C').addEventListener('click', () => pick('C', true));
+  $('nb-cmp').addEventListener('click', () => $('comparacion').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block:'start' }));
+  document.addEventListener('keydown', e => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (/^(INPUT|TEXTAREA|SELECT)$/.test((e.target.tagName || ''))) return;
+    if (e.key === '1') pick('A', true);
+    if (e.key === '2') pick('B', true);
+    if (e.key === '3') pick('C', true);
+  });
+}
+function pick(k, scroll){
+  state.active = k;
+  if (k === 'C') { state.red = 8; syncControls(); }
+  renderAll();
+  if (scroll) $('resultados').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block:'start' });
+}
+
+/* ---------- Piezas de interfaz ---------- */
+const titles = S => ({
+  A: 'ESCENARIO A – Situación inicial',
+  B: 'ESCENARIO B – Aumento del costo del alimento',
+  C: 'ESCENARIO B – Reducción del costo variable en ' + numStr(state.red) + '%'
+});
+function barHTML(r, scale){
+  const w = x => Math.max(0, x / scale * 100);
+  const loss = r.pi < 0;
+  let segs = '<span class="seg ct" style="width:' + w(loss ? r.IT : r.CT) + '%"></span>';
+  if (r.pi > 0) segs += '<span class="seg pi" style="width:' + Math.max(w(r.pi), 0.6) + '%"></span>';
+  if (loss) segs += '<span class="seg loss" style="width:' + w(-r.pi) + '%"></span>';
+  return '<div class="bar" role="img" aria-label="Costo total ' + money(r.CT) + ', ' + (loss ? 'pérdida ' : 'ganancia ') + money(Math.abs(r.pi)) + '">' + segs + '</div>' +
+    '<div class="legend"><span><i class="sw ct"></i>Costo total ' + money(r.CT) + '</span>' +
+    '<span><i class="sw ' + (loss ? 'loss' : 'pi') + '"></i>' + (loss ? 'Pérdida ' : 'Ganancia ') + money(Math.abs(r.pi)) + '</span></div>';
+}
+function cardBody(key, r, S, sc){
+  const chg = key !== 'A';
+  let h = '<dl class="data">' +
+    '<div><dt>Producción (q)</dt><dd>' + fmt(r.q) + ' kg</dd></div>' +
+    '<div><dt>Precio (P)</dt><dd>' + money(r.P, true) + '/kg</dd></div>' +
+    '<div><dt>Costo fijo (CF)</dt><dd>' + money(r.CF) + '</dd></div>' +
+    '<div' + (chg ? ' class="chg"' : '') + '><dt>Costo variable (CV)</dt><dd>' + money(r.CV) + '</dd></div></dl>' +
+    '<dl class="res">' +
+    '<div><dt>Ingreso Total (IT)</dt><dd>' + money(r.IT) + '</dd></div>' +
+    '<div><dt>Costo Total (CT)</dt><dd>' + money(r.CT) + '</dd></div>' +
+    '<div class="r-pi' + (r.pi < 0 ? ' neg' : '') + '"><dt>Ganancia (π)</dt><dd>' + money(r.pi) + '</dd></div></dl>' +
+    barHTML(r, sc);
+  if (key === 'C') {
+    h += '<div class="steps">' +
+      '<p>Reducción = ' + fmt(S.B.CV) + ' × ' + numStr(state.red / 100) + ' = <b>' + money(r.red) + '</b></p>' +
+      '<p>Nuevo CV = ' + fmt(S.B.CV) + ' − ' + fmt(r.red) + ' = <b>' + money(r.CV) + '</b></p>' +
+      '<p>Nuevo CT = ' + fmt(r.CF) + ' + ' + fmt(r.CV) + ' = <b>' + money(r.CT) + '</b></p>' +
+      '<p>Nueva ganancia = ' + fmt(r.IT) + ' − ' + fmt(r.CT) + ' = <b>' + money(r.pi) + '</b></p></div>';
+  }
+  return h;
+}
+const pctChange = (d, base) => base === 0 ? '' : ' (' + (d < 0 ? '\u2212' : '+') + numStr(Math.round(Math.abs(d / base) * 1000) / 10) + ' %)';
+const moves = d => d > 0 ? 'sube' : d < 0 ? 'baja' : 'no cambia';
+
+function narrative(k, S){
+  const r = S[k];
+  if (k === 'A') {
+    if (r.pi > 0) return 'Situación de partida: el ingreso total supera al costo total, y esa diferencia es la ganancia de ' + money(r.pi) + '.';
+    if (r.pi === 0) return 'Situación de partida: el ingreso total cubre exactamente el costo total. No hay ganancia ni pérdida.';
+    return 'Situación de partida: el costo total supera al ingreso total. Hay una pérdida de ' + money(-r.pi) + '.';
+  }
+  if (k === 'B') {
+    const d = S.B.CV - S.A.CV, dp = S.B.pi - S.A.pi;
+    if (d === 0) return 'El costo variable es igual al del Escenario A, por lo que los resultados no cambian.';
+    return 'Frente a A, el CV ' + moves(d) + ' ' + money(Math.abs(d)) + ', el CT ' + moves(S.B.CT - S.A.CT) + ' en la misma cantidad y la ganancia ' + moves(dp) + ' ' + money(Math.abs(dp)) + pctChange(dp, S.A.pi) + '.';
+  }
+  const dcv = S.C.CV - S.B.CV, dp = S.C.pi - S.B.pi, da = S.C.pi - S.A.pi;
+  if (dcv === 0) return 'Con 0 % de reducción el resultado es igual al del Escenario B.';
+  const vsA = da < 0 ? 'Aún queda ' + money(-da) + ' por debajo del Escenario A.' : da > 0 ? 'Supera al Escenario A en ' + money(da) + '.' : 'Iguala al Escenario A.';
+  return 'Reducir el CV en ' + numStr(state.red) + ' % lo baja en ' + money(-dcv) + '; la ganancia ' + moves(dp) + ' de ' + money(S.B.pi) + ' a ' + money(S.C.pi) + '. ' + vsA;
+}
+
+/* ---------- Gráfico de barras agrupadas ---------- */
+function niceStep(range, ticks){
+  const raw = range / ticks, mag = Math.pow(10, Math.floor(Math.log10(raw))), nrm = raw / mag;
+  return (nrm <= 1 ? 1 : nrm <= 2 ? 2 : nrm <= 5 ? 5 : 10) * mag;
+}
+function barChart(S){
+  const W = 760, H = 400, m = { l: 82, r: 16, t: 26, b: 58 };
+  const cols = [['A', 'Escenario A'], ['B', 'Escenario B'], ['C', 'B − ' + numStr(state.red) + ' %']];
+  const vals = []; cols.forEach(c => { vals.push(S[c[0]].IT, S[c[0]].CT, S[c[0]].pi); });
+  const max = Math.max.apply(null, vals.concat(0)), min = Math.min.apply(null, vals.concat(0));
+  const step = niceStep((max - min) || 1, 5);
+  let yMax = Math.ceil(max / step) * step, yMin = Math.floor(min / step) * step;
+  if (yMax - max < step * 0.18) yMax += step;
+  if (yMax === yMin) yMax = yMin + step;
+  const pw = W - m.l - m.r, ph = H - m.t - m.b, gw = pw / 3, bw = gw * 0.23, gap = 7;
+  const y = v => m.t + (yMax - v) / (yMax - yMin) * ph;
+  let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Gráfico comparativo de ingreso total, costo total y ganancia por escenario">';
+  cols.forEach((c, i) => { if (c[0] === state.active) s += '<rect class="actbg" x="' + (m.l + gw * i + 6) + '" y="' + m.t + '" width="' + (gw - 12) + '" height="' + ph + '" rx="6"/>'; });
+  for (let v = yMin; v <= yMax + step / 2; v += step) {
+    s += '<line class="grid" x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + y(v) + '" y2="' + y(v) + '"/>' +
+         '<text class="muted" x="' + (m.l - 10) + '" y="' + (y(v) + 5) + '" text-anchor="end" font-size="14">' + fmt(v) + '</text>';
+  }
+  s += '<line class="axis" x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + y(0) + '" y2="' + y(0) + '"/>';
+  cols.forEach((c, i) => {
+    const r = S[c[0]], cx = m.l + gw * (i + 0.5), x0 = cx - (3 * bw + 2 * gap) / 2;
+    [['IT', 'b-it'], ['CT', 'b-ct'], ['pi', r.pi < 0 ? 'b-loss' : 'b-pi']].forEach((b, j) => {
+      const v = r[b[0]], x = x0 + j * (bw + gap), top = Math.min(y(v), y(0)), h = Math.max(Math.abs(y(v) - y(0)), 1.5);
+      s += '<rect class="' + b[1] + '" x="' + x + '" y="' + top + '" width="' + bw + '" height="' + h + '" rx="3"/>';
+      const ty = v >= 0 ? top - 7 : top + h + 17;
+      s += '<text x="' + (x + bw / 2) + '" y="' + ty + '" text-anchor="middle" font-size="14" font-weight="600">' + fmt(v) + '</text>';
+    });
+    s += '<text x="' + cx + '" y="' + (H - 22) + '" text-anchor="middle" font-size="16" font-weight="600"' + (c[0] === state.active ? ' style="fill:var(--teal)"' : '') + '>' + c[1] + '</text>';
+  });
+  s += '<text class="muted" x="' + (W / 2) + '" y="' + (H - 3) + '" text-anchor="middle" font-size="13">Valores en soles (S/)</text></svg>';
+  return s;
+}
+
+/* ---------- Gráfico de sensibilidad ---------- */
+function sensChart(S, L){
+  const W = 640, H = 400, m = { l: 82, r: 20, t: 28, b: 62 };
+  const x0v = 5000, x1v = 40000, IT = S.A.IT, CF = S.A.CF;
+  const pif = cv => IT - CF - cv;
+  let yMax = Math.max(pif(x0v), 0), yMin = Math.min(pif(x1v), 0);
+  const step = niceStep((yMax - yMin) || 1, 5);
+  yMax = Math.ceil(yMax / step) * step; yMin = Math.floor(yMin / step) * step;
+  if (yMax === yMin) yMax = yMin + step;
+  const pw = W - m.l - m.r, ph = H - m.t - m.b;
+  const X = v => m.l + (Math.min(Math.max(v, x0v), x1v) - x0v) / (x1v - x0v) * pw;
+  const Y = v => m.t + (yMax - v) / (yMax - yMin) * ph;
+  const be = IT - CF;
+  let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Ganancia en función del costo variable">';
+  if (be >= x0v && be < x1v) s += '<rect x="' + X(be) + '" y="' + Y(0) + '" width="' + (X(x1v) - X(be)) + '" height="' + (Y(yMin) - Y(0)) + '" style="fill:var(--lossSoft)"/>';
+  if (be < x0v) s += '<rect x="' + m.l + '" y="' + Y(0) + '" width="' + pw + '" height="' + (Y(yMin) - Y(0)) + '" style="fill:var(--lossSoft)"/>';
+  for (let v = yMin; v <= yMax + step / 2; v += step) {
+    s += '<line class="grid" x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + Y(v) + '" y2="' + Y(v) + '"/>' +
+         '<text class="muted" x="' + (m.l - 10) + '" y="' + (Y(v) + 5) + '" text-anchor="end" font-size="14">' + fmt(v) + '</text>';
+  }
+  for (let v = x0v; v <= x1v; v += 5000) {
+    s += '<text class="muted" x="' + X(v) + '" y="' + (H - m.b + 22) + '" text-anchor="middle" font-size="14">' + fmt(v) + '</text>';
+  }
+  s += '<line class="axis" x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + Y(0) + '" y2="' + Y(0) + '" stroke-dasharray="6 4"/>' +
+       '<text class="muted" x="' + (W - m.r - 4) + '" y="' + (Y(0) - 8) + '" text-anchor="end" font-size="13">π = 0</text>';
+  s += '<line x1="' + X(x0v) + '" y1="' + Y(pif(x0v)) + '" x2="' + X(x1v) + '" y2="' + Y(pif(x1v)) + '" style="stroke:var(--teal);stroke-width:3.5" stroke-linecap="round"/>';
+  const halo = 'stroke:var(--surface);stroke-width:4;paint-order:stroke';
+  [['A', 'A', 0, -14, 'middle'], ['C', 'B − red.', 0, 26, 'middle'], ['B', 'B', 12, -10, 'start']].forEach(p => {
+    const r = S[p[0]], px = X(r.CV), py = Y(pif(r.CV));
+    s += '<circle cx="' + px + '" cy="' + py + '" r="5.5" style="fill:var(--surface);stroke:var(--ink);stroke-width:2"/>' +
+         '<text x="' + (px + p[2]) + '" y="' + (py + p[3]) + '" text-anchor="' + p[4] + '" font-size="14" font-weight="600" style="' + halo + '">' + p[1] + '</text>';
+  });
+  const cx = X(L.CV), cy = Y(L.pi);
+  s += '<line x1="' + cx + '" x2="' + cx + '" y1="' + cy + '" y2="' + Y(0) + '" style="stroke:var(--ink);stroke-width:1.5" stroke-dasharray="3 4"/>' +
+       '<circle cx="' + cx + '" cy="' + cy + '" r="9" style="fill:' + (L.pi < 0 ? 'var(--loss)' : 'var(--pi)') + ';stroke:var(--surface);stroke-width:3"/>';
+  s += '<text x="' + ((m.l + W - m.r) / 2) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="15" font-weight="600">Costo variable (S/)</text>';
+  s += '<text transform="translate(18 ' + (m.t + ph / 2) + ') rotate(-90)" text-anchor="middle" font-size="15" font-weight="600">Ganancia π (S/)</text></svg>';
+  return s;
+}
+
+/* ---------- Render ---------- */
+function renderAll(){
+  const S = scenarios(state), T = titles(S);
+  const sc = Math.max.apply(null, [S.A.IT, S.A.CT, S.B.CT, S.C.CT, S.B.IT, S.C.IT, 1]);
+  const k = state.active, r = S[k];
+
+  // navegación
+  ['A', 'B', 'C'].forEach(x => $('nb-' + x).setAttribute('aria-pressed', String(x === k)));
+  $('nb-C-t').textContent = 'B con reducción ' + numStr(state.red) + ' %';
+  document.querySelectorAll('#chips .chip').forEach(c => c.setAttribute('aria-pressed', String(parseFloat(c.dataset.red) === state.red)));
+
+  // resultados principales
+  $('m-title').textContent = T[k];
+  $('m-IT').textContent = money(r.IT);
+  $('m-CT').textContent = money(r.CT);
+  $('m-pi').textContent = money(r.pi);
+  $('m-pi-card').classList.toggle('neg', r.pi < 0);
+  let pn = '';
+  if (k === 'B') { const d = S.B.pi - S.A.pi; pn = d === 0 ? 'Igual al Escenario A' : (d < 0 ? '\u2193 ' : '\u2191 ') + money(Math.abs(d)) + (d < 0 ? ' menos' : ' más') + ' que en A'; }
+  if (k === 'C') { const d = S.C.pi - S.B.pi; pn = d === 0 ? 'Igual al Escenario B' : (d < 0 ? '\u2193 ' : '\u2191 ') + money(Math.abs(d)) + (d < 0 ? ' menos' : ' más') + ' que en B'; }
+  if (k === 'A') pn = r.pi < 0 ? 'Resultado con pérdida' : r.pi === 0 ? 'Punto de equilibrio' : 'Resultado con ganancia';
+  $('m-pi-note').textContent = pn;
+  $('m-eq').innerHTML =
+    '<p>IT = P × q = ' + fmt(r.P, true) + ' × ' + fmt(r.q) + ' = <b>' + money(r.IT) + '</b></p>' +
+    '<p>CT = CF + CV = ' + fmt(r.CF) + ' + ' + fmt(r.CV) + ' = <b>' + money(r.CT) + '</b></p>' +
+    '<p>π = IT − CT = ' + fmt(r.IT) + ' − ' + fmt(r.CT) + ' = <b>' + money(r.pi) + '</b></p>';
+  $('m-bar').innerHTML = barHTML(r, sc);
+  $('m-note').textContent = narrative(k, S);
+
+  // escenarios
+  ['A', 'B', 'C'].forEach(x => {
+    $('t-' + x).textContent = T[x];
+    $('body-' + x).innerHTML = cardBody(x, S[x], S, sc);
+    $('card-' + x).classList.toggle('on', x === k);
+  });
+
+  // tabla
+  const cls = x => x === k ? ' class="on-col"' : '';
+  const tone = v => v < 0 ? ' neg-t' : '';
+  const row = (lab, f, extra) => '<tr' + (extra || '') + '><th scope="row">' + lab + '</th>' +
+    ['A', 'B', 'C'].map(x => '<td' + (x === k ? ' class="on-col' + (f === 'pi' ? tone(S[x][f]) : '') + '"' : (f === 'pi' && S[x][f] < 0 ? ' class="neg-t"' : '')) + '>' + money(S[x][f]) + '</td>').join('') + '</tr>';
+  $('cmp').innerHTML =
+    '<thead><tr><th></th><th' + cls('A') + '>ESCENARIO A</th><th' + cls('B') + '>ESCENARIO B</th><th' + cls('C') + '>B − ' + numStr(state.red) + '%</th></tr></thead><tbody>' +
+    row('Costo variable (CV)', 'CV') + row('Ingreso total (IT)', 'IT') + row('Costo total (CT)', 'CT') + row('Ganancia (π)', 'pi', ' class="pi-row"') + '</tbody>';
+
+  // gráfico
+  $('chart').innerHTML = barChart(S);
+
+  // sensibilidad
+  const L = calc(state.q, state.P, state.CF, state.cv);
+  const dCV = L.CV - S.A.CV, dCT = L.CT - S.A.CT, dPi = L.pi - S.A.pi;
+  $('s-CT').textContent = money(L.CT);
+  $('s-pi').textContent = money(L.pi);
+  $('s-pi-card').classList.toggle('neg', L.pi < 0);
+  const dtxt = (d, inv) => {
+    if (d === 0) return ['Igual que en A', 'flat'];
+    const good = inv ? d < 0 : d > 0;
+    return [(d > 0 ? '\u2191 +' : '\u2193 \u2212') + money(Math.abs(d)).replace('\u2212', '') + ' frente a A', good ? 'good' : 'bad'];
+  };
+  const a = dtxt(dCT, true), b = dtxt(dPi, false);
+  $('s-dCT').textContent = a[0]; $('s-dCT').className = 'delta ' + a[1];
+  $('s-dpi').textContent = b[0]; $('s-dpi').className = 'delta ' + b[1];
+  $('chain').innerHTML = dCV === 0
+    ? '<span class="tag eq">CV igual al de A</span><span>\u2192</span><span class="tag eq">CT igual</span><span>\u2192</span><span class="tag eq">π igual</span>'
+    : (dCV > 0
+      ? '<span class="tag up">CV \u2191</span><span>\u2192</span><span class="tag up">CT \u2191</span><span>\u2192</span><span class="tag up">π \u2193</span>'
+      : '<span class="tag dn">CV \u2193</span><span>\u2192</span><span class="tag dn">CT \u2193</span><span>\u2192</span><span class="tag dn">π \u2191</span>');
+  $('s-eq').innerHTML =
+    '<p>CT = CF + CV = ' + fmt(L.CF) + ' + ' + fmt(L.CV) + ' = <b>' + money(L.CT) + '</b></p>' +
+    '<p>π = IT − CT = ' + fmt(L.IT) + ' − ' + fmt(L.CT) + ' = <b>' + money(L.pi) + '</b></p>' +
+    '<p style="color:var(--muted);font-size:15px">Con este IT y este CF, la ganancia llega a cero cuando CV = ' + money(L.IT - L.CF) + '.</p>';
+  $('s-warn').innerHTML = L.pi < 0 ? '<div class="warn">Con este costo variable hay pérdida: el costo total supera al ingreso total.</div>' : '';
+  $('sens-chart').innerHTML = sensChart(S, L);
+
+  // estado de datos
+  const same = ['q', 'P', 'CF', 'CVa', 'CVb', 'red'].every(x => state[x] === DEFAULTS[x]);
+  const bd = $('state-badge');
+  bd.textContent = same ? 'Datos originales del caso' : 'Datos modificados';
+  bd.className = 'badge ' + (same ? 'ok' : 'mod');
+}
+
+/* ---------- Verificación con los datos originales (independiente de lo editado) ---------- */
+function renderCheck(){
+  const d = DEFAULTS;
+  const A = calc(d.q, d.P, d.CF, d.CVa), B = calc(d.q, d.P, d.CF, d.CVb);
+  const red = r2(d.CVb * 8 / 100), C = calc(d.q, d.P, d.CF, r2(d.CVb - red));
+  const ok = (r, it, ct, pi, cv) => r.IT === it && r.CT === ct && r.pi === pi && (cv === undefined || r.CV === cv);
+  const mark = v => v ? '\u2713' : '\u2717 revisar';
+  $('foot').innerHTML =
+    '<p><b>Verificación automática con los datos del caso</b> (no depende de lo que se edite arriba)</p>' +
+    '<p>Escenario A: IT = ' + money(A.IT) + ', CT = ' + money(A.CT) + ', π = ' + money(A.pi) + ' ' + mark(ok(A, 29700, 26700, 3000)) + '</p>' +
+    '<p>Escenario B: IT = ' + money(B.IT) + ', CT = ' + money(B.CT) + ', π = ' + money(B.pi) + ' ' + mark(ok(B, 29700, 29000, 700)) + '</p>' +
+    '<p>B con reducción de 8 %: CV = ' + money(C.CV) + ', CT = ' + money(C.CT) + ', π = ' + money(C.pi) + ' ' + mark(ok(C, 29700, 27304, 2396, 19504)) + '</p>';
+}
+
+buildFields();
+bindExtra();
+syncControls();
+renderAll();
+renderCheck();
+</script>
+</body>
+</html>
